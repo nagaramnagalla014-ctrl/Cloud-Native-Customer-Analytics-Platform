@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Analytiq — Cloud-Native Customer Analytics Platform</title>
+<link rel="stylesheet" href="css/styles.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+<div class="demo-banner"><i class="fas fa-flask"></i> UI Demo — backend requires local Docker setup (PostgreSQL + Apache Airflow + AWS S3)</div>
+
+<nav class="navbar">
+  <div class="nav-brand"><i class="fas fa-chart-pie"></i> Analytiq</div>
+  <div class="nav-links">
+    <a href="#" class="nav-link active" onclick="showTab('dashboard',this)">Dashboard</a>
+    <a href="#" class="nav-link" onclick="showTab('engagement',this)">Engagement</a>
+    <a href="#" class="nav-link" onclick="showTab('segments',this)">Segments</a>
+    <a href="#" class="nav-link" onclick="showTab('reports',this)">Reports</a>
+  </div>
+  <div class="nav-status"><i class="fas fa-circle-check"></i> Airflow Pipelines Running</div>
+</nav>
+
+<main class="main-content">
+  <!-- DASHBOARD -->
+  <div id="tab-dashboard" class="tab active">
+    <div class="page-header"><h1>Executive Dashboard</h1><span class="period-badge">Last 30 Days</span></div>
+    <div class="kpi-grid">
+      <div class="kpi-card blue"><div class="kpi-label">Total Revenue</div><div class="kpi-value">$4.82M</div><div class="kpi-delta up"><i class="fas fa-arrow-up"></i> +12.3% MoM</div></div>
+      <div class="kpi-card green"><div class="kpi-label">Active Customers</div><div class="kpi-value">128,492</div><div class="kpi-delta up"><i class="fas fa-arrow-up"></i> +4.1%</div></div>
+      <div class="kpi-card purple"><div class="kpi-label">Conversion Rate</div><div class="kpi-value">3.7%</div><div class="kpi-delta up"><i class="fas fa-arrow-up"></i> +0.4pp</div></div>
+      <div class="kpi-card orange"><div class="kpi-label">Avg Order Value</div><div class="kpi-value">$87.50</div><div class="kpi-delta up"><i class="fas fa-arrow-up"></i> +$3.20</div></div>
+      <div class="kpi-card red"><div class="kpi-label">Churn Rate</div><div class="kpi-value">2.1%</div><div class="kpi-delta down"><i class="fas fa-arrow-down"></i> -0.3pp</div></div>
+      <div class="kpi-card cyan"><div class="kpi-label">New Customers</div><div class="kpi-value">8,234</div><div class="kpi-delta up"><i class="fas fa-arrow-up"></i> +18.2%</div></div>
+    </div>
+
+    <div class="section-grid">
+      <div class="card">
+        <div class="card-header"><h2>Daily Revenue (Last 7 Days)</h2></div>
+        <div class="bar-chart-wrap">
+          <div id="revenueChart" class="bar-chart"></div>
+          <div id="revenueLabels" class="bar-labels"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><h2>Top Products</h2></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Product</th><th>Revenue</th><th>Units</th><th>Share</th></tr></thead>
+            <tbody id="productsBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h2>Channel Performance</h2></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Channel</th><th>Sessions</th><th>Conversions</th><th>Conv. Rate</th><th>Revenue</th><th>Share</th></tr></thead>
+          <tbody id="channelBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ENGAGEMENT -->
+  <div id="tab-engagement" class="tab">
+    <div class="page-header"><h1>Customer Engagement</h1></div>
+    <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr)">
+      <div class="kpi-card blue"><div class="kpi-label">Daily Active Users</div><div class="kpi-value">42,183</div></div>
+      <div class="kpi-card green"><div class="kpi-label">Weekly Active Users</div><div class="kpi-value">98,401</div></div>
+      <div class="kpi-card purple"><div class="kpi-label">Monthly Active Users</div><div class="kpi-value">128,492</div></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h2>Events by Type</h2></div>
+      <div id="eventBars"></div>
+    </div>
+  </div>
+
+  <!-- SEGMENTS -->
+  <div id="tab-segments" class="tab">
+    <div class="page-header"><h1>Customer Segments</h1></div>
+    <div class="card">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Segment</th><th>Customers</th><th>Avg LTV</th><th>Churn Risk</th><th>Criteria</th></tr></thead>
+          <tbody id="segmentsBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- REPORTS -->
+  <div id="tab-reports" class="tab">
+    <div class="page-header"><h1>Report Generation</h1></div>
+    <div class="section-grid">
+      <div class="card">
+        <div class="card-header"><h2>Generate New Report</h2></div>
+        <div class="report-form">
+          <label>Report Type<select id="reportType"><option>MONTHLY</option><option>WEEKLY</option><option>DAILY</option><option>CUSTOM</option></select></label>
+          <label>Start Date<input type="date" id="startDate" value="2024-12-01"></label>
+          <label>End Date<input type="date" id="endDate" value="2024-12-31"></label>
+          <button class="gen-btn" onclick="generateReport()"><i class="fas fa-bolt"></i> Generate Report</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><h2>Recent Reports</h2></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Name</th><th>Type</th><th>Status</th><th>Generated</th><th>Download</th></tr></thead>
+            <tbody id="reportsBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div id="reportToast" class="toast" style="display:none"></div>
+  </div>
+</main>
+<script src="js/app.js"></script>
+</body>
+</html>
